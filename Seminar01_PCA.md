@@ -699,16 +699,17 @@ legend( "Location", "southoutside" )
 Now that we've applied PCA in two dimensions and interpreted the results geometrically, let's scale up to the entire data set.
 
 ```matlab
-[V, S, Lambda] = pca( bodyVarsZScore, "Rows", "pairwise" );
+bodyVarsClean = rmmissing( bodyVarsZScore );
+[V, S, Lambda] = pca( bodyVarsClean );
 ```
 
 Verify that the transformed variables are uncorrelated.
 
 ```matlab
-srho = corr( S, "Rows", "pairwise" );
+srho = corr( S );
 
 figure
-heatmap( srho, "Colormap", turbo() )
+heatmap( srho, "Colormap", gray( 2 ), "ColorLimits", [0, 1] )
 title( "Scores: Correlation" )
 ```
 
@@ -905,16 +906,16 @@ Select an image file and convert it to a grayscale floating\-point matrix.
 
 ```matlab
 imageFile = "peppers.png";
-rgb = imread( imageFile );
-gray = im2gray( rgb );
-I = double( gray );
+rgbImage = imread( imageFile );
+grayImage = im2gray( rgbImage );
+I = double( grayImage );
 ```
 
 Apply PCA. Do not center the data \- this makes the reconstruction simpler. We don't standardize the image data because we expect all elements belong to a fixed grayscale range of integer values.
 
 ```matlab
 [IV, IS, ILambda] = pca( I, "Centered", false );
-numComponents = 13;
+numComponents = 50;
 ```
 
 Approximate the grayscale image.
@@ -927,7 +928,7 @@ Show the results.
 
 ```matlab
 figure
-imshowpair( gray, approxI, "montage" )
+imshowpair( grayImage, approxI, "montage" )
 title( "Number of components: " + numComponents )
 ```
 
