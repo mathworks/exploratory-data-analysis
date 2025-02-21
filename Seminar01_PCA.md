@@ -1,5 +1,5 @@
 
-<a id="TMP_2e02"></a>
+<a id="TMP_14ec"></a>
 
 # **Principal Component Analysis**
 
@@ -8,101 +8,101 @@ In this script we discuss the theory and motivation for principal component anal
 <!-- Begin Toc -->
 
 ## Table of Contents
-&emsp;[Context and motivation](#TMP_855b)
+&emsp;[Context and motivation](#TMP_9c8d)
  
-&emsp;&emsp;[Applications](#TMP_2d90)
+&emsp;&emsp;[Applications](#TMP_112a)
  
-&emsp;&emsp;[When can PCA be used?](#TMP_7bb7)
+&emsp;&emsp;[When can PCA be used?](#TMP_6f3c)
  
-&emsp;&emsp;[What is PCA?](#TMP_288a)
+&emsp;&emsp;[What is PCA?](#TMP_91f1)
  
-&emsp;&emsp;[When should PCA not be used?](#TMP_8511)
+&emsp;&emsp;[When should PCA not be used?](#TMP_979e)
  
-&emsp;&emsp;[Example data](#TMP_5fb4)
+&emsp;&emsp;[Example data](#TMP_2a76)
  
-&emsp;&emsp;[Motivating example](#TMP_431e)
+&emsp;&emsp;[Motivating example](#TMP_8554)
  
-&emsp;[Mean and variance](#TMP_19d6)
+&emsp;[Mean and variance](#TMP_46cb)
  
-&emsp;&emsp;[Mean](#TMP_350b)
+&emsp;&emsp;[Mean](#TMP_687d)
  
-&emsp;&emsp;[Examples](#TMP_71e1)
+&emsp;&emsp;[Examples](#TMP_3985)
  
-&emsp;&emsp;[Variance](#TMP_658c)
+&emsp;&emsp;[Variance](#TMP_37ff)
  
-&emsp;&emsp;[Examples](#TMP_3055)
+&emsp;&emsp;[Examples](#TMP_67f3)
  
-&emsp;[Covariance and correlation](#TMP_7a8b)
+&emsp;[Covariance and correlation](#TMP_5cc4)
  
-&emsp;&emsp;[Covariance](#TMP_9d1d)
+&emsp;&emsp;[Covariance](#TMP_33c4)
  
-&emsp;&emsp;[Examples](#TMP_58a4)
+&emsp;&emsp;[Examples](#TMP_884c)
  
-&emsp;&emsp;[Correlation](#TMP_9c02)
+&emsp;&emsp;[Correlation](#TMP_649e)
  
-&emsp;&emsp;[Example](#TMP_2678)
+&emsp;&emsp;[Example](#TMP_6b3d)
  
-&emsp;[Eigenvalues and eigenvectors](#TMP_5f80)
+&emsp;[Eigenvalues and eigenvectors](#TMP_8a77)
  
-&emsp;&emsp;[Interpreting eigenvalues and eigenvectors](#TMP_6d46)
+&emsp;&emsp;[Interpreting eigenvalues and eigenvectors](#TMP_6466)
  
-&emsp;&emsp;[Example](#TMP_0756)
+&emsp;&emsp;[Example](#TMP_31a5)
  
-&emsp;&emsp;[Linear independence](#TMP_1f77)
+&emsp;&emsp;[Linear independence](#TMP_2924)
  
-&emsp;[**Diagonalization of real symmetric matrices**](#TMP_18ee)
+&emsp;[**Diagonalization of real symmetric matrices**](#TMP_920f)
  
-&emsp;&emsp;[**The spectral theorem**](#TMP_9306)
+&emsp;&emsp;[**The spectral theorem**](#TMP_8b20)
  
-&emsp;&emsp;[Application to covariance/correlation matrices](#TMP_74b6)
+&emsp;&emsp;[Application to covariance/correlation matrices](#TMP_9424)
  
-&emsp;&emsp;[Putting everything together](#TMP_4695)
+&emsp;&emsp;[Putting everything together](#TMP_41bf)
  
-&emsp;[Applying PCA: a geometric interpretation](#TMP_042f)
+&emsp;[Applying PCA: a geometric interpretation](#TMP_09a9)
  
-&emsp;[Translate the data so that the centroid lies at the origin.](#TMP_9669)
+&emsp;[Translate the data so that the centroid lies at the origin.](#TMP_921a)
  
-&emsp;[Rescale the data so that each dimension has standard deviation one.](#TMP_3dfa)
+&emsp;[Rescale the data so that each dimension has standard deviation one.](#TMP_0dbb)
  
-&emsp;[Compute the principal components.](#TMP_1858)
+&emsp;[Compute the principal components.](#TMP_7d16)
  
-&emsp;[Visualize the second principal component.](#TMP_56ba)
+&emsp;[Visualize the second principal component.](#TMP_2b7b)
  
-&emsp;[Overlay the ellipse with axes defined by the principal components.](#TMP_4fe2)
+&emsp;[Overlay the ellipse with axes defined by the principal components.](#TMP_3a73)
  
-&emsp;[Visualize the transformed data in the new coordinate system.](#TMP_5b0c)
+&emsp;[Visualize the transformed data in the new coordinate system.](#TMP_2da6)
  
-&emsp;[Applying PCA](#TMP_8008)
+&emsp;[Applying PCA](#TMP_60b4)
  
-&emsp;[Interpreting the coefficients, scores, and eigenvalues](#TMP_07d6)
+&emsp;[Interpreting the coefficients, scores, and eigenvalues](#TMP_131f)
  
-&emsp;&emsp;[Coefficients](#TMP_93f5)
+&emsp;&emsp;[Coefficients](#TMP_50ef)
  
-&emsp;&emsp;[Scores](#TMP_2d8e)
+&emsp;&emsp;[Scores](#TMP_24b8)
  
-&emsp;&emsp;[Eigenvalues](#TMP_64a4)
+&emsp;&emsp;[Eigenvalues](#TMP_1d57)
  
-&emsp;[Deciding how many components to keep](#TMP_2109)
+&emsp;[Deciding how many components to keep](#TMP_429e)
  
-&emsp;&emsp;[The elbow method](#TMP_1f71)
+&emsp;&emsp;[The elbow method](#TMP_1966)
  
-&emsp;&emsp;[The white noise method](#TMP_2b3b)
+&emsp;&emsp;[The white noise method](#TMP_1bd5)
  
-&emsp;&emsp;[The broken stick method](#TMP_0cc9)
+&emsp;&emsp;[The broken stick method](#TMP_9853)
  
-&emsp;[Grouping variables](#TMP_0b6b)
+&emsp;[Grouping variables](#TMP_2838)
  
-&emsp;[Selecting representative features](#TMP_2ab4)
+&emsp;[Selecting representative features](#TMP_289f)
  
-&emsp;[PCA for image feature extraction](#TMP_8676)
+&emsp;[PCA for image feature extraction](#TMP_392c)
  
-&emsp;[Outlier analysis](#TMP_970b)
+&emsp;[Outlier analysis](#TMP_3bf5)
  
 <!-- End Toc -->
-<a id="TMP_855b"></a>
+<a id="TMP_9c8d"></a>
 
 # Context and motivation
-<a id="TMP_2d90"></a>
+<a id="TMP_112a"></a>
 
 ## Applications
 
@@ -112,7 +112,7 @@ Applications of PCA include:
 -  Understanding how features are related 
 -  Identifying groups of similar features (clustering) 
 -  Finding outliers 
-<a id="TMP_7bb7"></a>
+<a id="TMP_6f3c"></a>
 
 ## When can PCA be used?
 
@@ -120,7 +120,7 @@ PCA can be used whenever we have:
 
 -  a collection of continuous numeric variables, or 
 -  a correlation or covariance matrix corresponding to a set of variables. 
-<a id="TMP_288a"></a>
+<a id="TMP_91f1"></a>
 
 ## What is PCA?
 
@@ -129,13 +129,13 @@ PCA is a matrix transformation designed to decorrelate a set of variables, repre
 -  $X$ \- a numeric matrix of size $n\times p$ , where $n$ is the number of observations (rows) and $p$ is the number of variables (columns) 
 -  $V$ \- an orthogonal matrix (i.e., $VV^T =V^T V=I_{p\times p}$ ) of size $p\times p$ 
 -  $S$ \- a numeric matrix of size $n\times p$ , obtained by $S=XV$ 
-<a id="TMP_8511"></a>
+<a id="TMP_979e"></a>
 
 ## When should PCA not be used?
 
 PCA is based on linear correlation, so cannot be relied upon to detect nonlinear relationships in data sets.
 
-<a id="TMP_5fb4"></a>
+<a id="TMP_2a76"></a>
 
 ## Example data
 
@@ -165,7 +165,7 @@ disp( head( H ) )
     41485    361     68               108                       44              157.9      64.8     25.99      34.3         32.6             30.7           89.7         21.1                 30.5                   65.333                 160.02                62.596                1.66     
     41486    735     62               126                       64              166.2      86.2     31.21        35           36             35.3             97         24.6                 24.8                   84.667                 162.56                84.822               1.945     
 ```
-<a id="TMP_431e"></a>
+<a id="TMP_8554"></a>
 
 ## Motivating example
 
@@ -249,26 +249,26 @@ legend( "Observed data", "Correlation = " + rho )
 ```
 
 ![figure_1.png](Seminar01_PCA_media/figure_1.png)
-<a id="TMP_19d6"></a>
+<a id="TMP_46cb"></a>
 
 # Mean and variance
 
 PCA is based upon some core statistical concepts, primarily the covariance or correlation matrix corresponding to a collection of features. Let's first define the mean and variance.
 
-<a id="TMP_350b"></a>
+<a id="TMP_687d"></a>
 
 ## Mean
 
 For a random variable $X$ , the mean (or expected value) of $X$ is $\mathbb{E}(X)=\int_{\mathbb{R}} xf(x)dx$ , where $f$ is the probability density function of $X$ . The mean of $X$ has the same units of measurement as $X$ .
 
-<a id="TMP_71e1"></a>
+<a id="TMP_3985"></a>
 
 
 ## Examples
 
 If $X$ represents a coin toss, then $\mathbb{E}(X)=1/2$ . If $X$ is uniformly distributed on the interval $[0,1]$ , then $\mathbb{E}(X)=1/2$ .
 
-<a id="TMP_658c"></a>
+<a id="TMP_37ff"></a>
 
 ## Variance
 
@@ -284,17 +284,17 @@ The units of variance are equal to the squared units of measurement of $X$ . For
 
  $\textrm{std}(X)=\sqrt{\textrm{var(X)}}$ .
 
-<a id="TMP_3055"></a>
+<a id="TMP_67f3"></a>
 
 
 ## Examples
 
 If $X$ represents a coin toss, then $\textrm{var}(X)=1/4$ . If $X\sim \textrm{U}(0,1)$ , then $\textrm{var}(X)=1/12$ .
 
-<a id="TMP_7a8b"></a>
+<a id="TMP_5cc4"></a>
 
 # Covariance and correlation
-<a id="TMP_9d1d"></a>
+<a id="TMP_33c4"></a>
 
 ## Covariance
 
@@ -310,7 +310,7 @@ Note that:
 
 If $X=[{\mathbf{x}}_1 ,\ldots,{\mathbf{x}}_p ]$ is a matrix containing data variables ${\mathbf{x}}_1 ,\ldots,{\mathbf{x}}_p$ , then $\textrm{cov}(X)$ is the $p\times p$ \-matrix with entries $\textrm{cov}({\mathbf{x}}_i ,{\mathbf{x}}_j )$ .
 
-<a id="TMP_58a4"></a>
+<a id="TMP_884c"></a>
 
 
 ## Examples
@@ -320,7 +320,7 @@ If $X$ is a coin toss and $Y$ is the other side of the coin, then $\textrm{cov}(
 
 If a stick of length 1 is broken randomly into two pieces of length $X$ and $Y$ , then $\textrm{cov}(X,Y)=-1/12$ .
 
-<a id="TMP_9c02"></a>
+<a id="TMP_649e"></a>
 
 ## Correlation
 
@@ -350,7 +350,7 @@ Note that if $X$ is an $n\times p$ standardized data matrix (i.e., each column h
 
 In this case, $\rho (X)=\frac{1}{n}X^T X$ .
 
-<a id="TMP_2678"></a>
+<a id="TMP_6b3d"></a>
 
 ## Example
 
@@ -399,22 +399,22 @@ title( "Body Measurements: Correlation" )
 ```
 
 ![figure_4.png](Seminar01_PCA_media/figure_4.png)
-<a id="TMP_5f80"></a>
+<a id="TMP_8a77"></a>
 
 # Eigenvalues and eigenvectors
-<a id="TMP_6d46"></a>
+<a id="TMP_6466"></a>
 
 ## Interpreting eigenvalues and eigenvectors
 
 If $A\mathbf{v}=\lambda \mathbf{v}$ , then $\mathbf{v}$ represents the direction vector of an invariant line under the transformation defined by $A$ , and $\lambda$ is the scale factor.
 
-<a id="TMP_0756"></a>
+<a id="TMP_31a5"></a>
 
 ## Example
 
 If $A=\left\lbrack \begin{array}{cc} 2 & 0\newline 0 & 3 \end{array}\right\rbrack$ , then the eigenvalues of $A$ are 2 and 3, with corresponding eigenvectors $[1,0]^T$ and $[0,1]^T$ . The unit square is mapped to the rectangle with coordinates $(2,0),(2,3),(0,3)$ and $(0,0)$ . The volume factor is $2\times 3=6$ .
 
-<a id="TMP_1f77"></a>
+<a id="TMP_2924"></a>
 
 ## Linear independence
 
@@ -426,22 +426,22 @@ If $A$ has eigenvectors ${\mathbf{v}}_1 ,\ldots,{\mathbf{v}}_p$ corresponding to
 
 If the eigenvectors are linearly independent, then $V^{-1}$ exists and $V^{-1} AV=\Lambda$ . $A$ is said to be diagonalizable and this means that up to a change of basis, $A$ is equivalent to a diagonal matrix.
 
-<a id="TMP_18ee"></a>
+<a id="TMP_920f"></a>
 
 # **Diagonalization of real symmetric matrices**
-<a id="TMP_9306"></a>
+<a id="TMP_8b20"></a>
 
 ## **The spectral theorem**
 
 If $A$ is real and $A=A^T$ (or complex and ${\overline{A} }^T =A$ ) then all eigenvalues of $A$ are real and $A$ is diagonalizable. Further, all eigenvectors of $A$ are orthogonal, so the matrix $V$ can be chosen to be orthogonal: $V^T =V^{-1}$ . We have $V^T AV=\Lambda$ .
 
-<a id="TMP_74b6"></a>
+<a id="TMP_9424"></a>
 
 ## Application to covariance/correlation matrices
 
 Any correlation matrix is symmetric, so the spectral theorem applies and we can diagonalize the correlation matrix via an orthogonal matrix. Correlation matrices are also positive definite, i.e., ${\mathbf{v}}^T \rho (X)\mathbf{v}\ge 0$ for all real vectors $\mathbf{v}$ , which implies that their eigenvalues are all nonnegative.
 
-<a id="TMP_4695"></a>
+<a id="TMP_41bf"></a>
 
 ## Putting everything together
 
@@ -453,7 +453,7 @@ We saw above that for our standardized data matrix $X$ , $\rho (X)=\frac{1}{n}X^
 
 The columns of the matrix $XV$ are therefore uncorrelated. Also, we can choose the eigenvalues in decreasing order $\lambda_1 \ge \cdots \ge \lambda_p \ge 0$ , so the columns are ordered by their information (variance) content.
 
-<a id="TMP_042f"></a>
+<a id="TMP_09a9"></a>
 
 # Applying PCA: a geometric interpretation
 
@@ -482,7 +482,7 @@ axis equal
 ```
 
 ![figure_5.png](Seminar01_PCA_media/figure_5.png)
-<a id="TMP_9669"></a>
+<a id="TMP_921a"></a>
 
 # Translate the data so that the centroid lies at the origin.
 
@@ -497,6 +497,7 @@ Recreate the scatter graph.
 
 ```matlab
 figure
+ax = axes();
 scatter( centeredHeight, centeredWeight, "." )
 xlabel( "Mean-centered height (cm)" )
 ylabel( "Mean-centered weight (kg)" )
@@ -512,13 +513,12 @@ hold on
 plot( c(1), c(2), ".", "MarkerSize", 20 )
 legend( "Data", "Centroid: (0, 0)", "Location", "northwest" )
 axis equal
-ax = gca();
 ax.XAxisLocation = "origin";
 ax.YAxisLocation = "origin";
 ```
 
 ![figure_6.png](Seminar01_PCA_media/figure_6.png)
-<a id="TMP_3dfa"></a>
+<a id="TMP_0dbb"></a>
 
 # Rescale the data so that each dimension has standard deviation one.
 
@@ -533,6 +533,7 @@ Recreate the scatter graph.
 
 ```matlab
 figure
+ax = axes();
 scatter( zscoredHeight, zscoredWeight, "." )
 xlabel( "z-scored height" )
 ylabel( "z-scored weight" )
@@ -542,13 +543,12 @@ hold on
 plot( c(1), c(2), ".", "MarkerSize", 20 )
 legend( "Data", "Centroid: (0, 0)", "Location", "northwest" )
 axis equal
-ax = gca();
 ax.XAxisLocation = "origin";
 ax.YAxisLocation = "origin";
 ```
 
 ![figure_7.png](Seminar01_PCA_media/figure_7.png)
-<a id="TMP_1858"></a>
+<a id="TMP_7d16"></a>
 
 # Compute the principal components.
 
@@ -569,6 +569,7 @@ Visualize the first principal component. First, recreate the scatter graph and c
 
 ```matlab
 figure
+ax = axes();
 scatter( zscoredHeight, zscoredWeight, "." )
 xlabel( "z-scored height" )
 ylabel( "z-scored weight" )
@@ -599,13 +600,12 @@ axis equal
 legend( "Data", "Centroid: (0, 0)", ...
     "Principal component 1: " + newline() + comp1Eqn, ...
     "Location", "southoutside" )
-ax = gca();
 ax.XAxisLocation = "origin";
 ax.YAxisLocation = "origin";
 ```
 
 ![figure_8.png](Seminar01_PCA_media/figure_8.png)
-<a id="TMP_56ba"></a>
+<a id="TMP_2b7b"></a>
 
 # Visualize the second principal component.
 
@@ -625,12 +625,12 @@ quiver( c(1), c(2), pc2(1), pc2(2), scale, ...
 
 ![figure_9.png](Seminar01_PCA_media/figure_9.png)
 
-In this example, the coefficient matrix is $V=\frac{1}{\sqrt{2}}\left\lbrack \begin{array}{cc} 1 & -1\newline 1 & 1 \end{array}\right\rbrack ==\left\lbrack \begin{array}{cc} \cos (\pi /4) & -\sin (\pi /4)\newline \cos (\pi /4) & \sin (\pi /4) \end{array}\right\rbrack$ .
+In this example, the coefficient matrix is $V=\frac{1}{\sqrt{2}}\left\lbrack \begin{array}{cc} 1 & -1\newline 1 & 1 \end{array}\right\rbrack =\left\lbrack \begin{array}{cc} \cos (\pi /4) & -\sin (\pi /4)\newline \cos (\pi /4) & \sin (\pi /4) \end{array}\right\rbrack$ .
 
 
 The matrix $V$ represents an anticlockwise rotation of $\pi /4$ radians (45 degrees) about the positive $x$ \-axis.
 
-<a id="TMP_4fe2"></a>
+<a id="TMP_3a73"></a>
 
 # Overlay the ellipse with axes defined by the principal components.
 
@@ -647,7 +647,7 @@ plot( xellipse, yellipse, ":", "LineWidth", 2, "DisplayName", "Ellipse with prin
 ```
 
 ![figure_10.png](Seminar01_PCA_media/figure_10.png)
-<a id="TMP_5b0c"></a>
+<a id="TMP_2da6"></a>
 
 # Visualize the transformed data in the new coordinate system.
 
@@ -655,6 +655,7 @@ Plot the transformed data points (the scores) and the centroid.
 
 ```matlab
 figure
+ax = axes();
 scatter( S(:, 1), S(:, 2), ".", "DisplayName", "Transformed height/weight data" )
 hold on
 plot( c(1), c(2), ".", "MarkerSize", 20, "DisplayName", "Centroid: (0,0)" )
@@ -663,7 +664,6 @@ plot( c(1), c(2), ".", "MarkerSize", 20, "DisplayName", "Centroid: (0,0)" )
 Annotate the chart and draw the axes to pass through the origin.
 
 ```matlab
-ax = gca();
 ax.XAxisLocation = "origin";
 ax.YAxisLocation = "origin";
 xlabel( "Component 1" )
@@ -692,14 +692,14 @@ legend( "Location", "southoutside" )
 ```
 
 ![figure_11.png](Seminar01_PCA_media/figure_11.png)
-<a id="TMP_8008"></a>
+<a id="TMP_60b4"></a>
 
 # Applying PCA
 
 Now that we've applied PCA in two dimensions and interpreted the results geometrically, let's scale up to the entire data set.
 
 ```matlab
-[V, S, Lambda] = pca( bodyVarsZScore );
+[V, S, Lambda] = pca( bodyVarsZScore, "Rows", "pairwise" );
 ```
 
 Verify that the transformed variables are uncorrelated.
@@ -713,10 +713,10 @@ title( "Scores: Correlation" )
 ```
 
 ![figure_12.png](Seminar01_PCA_media/figure_12.png)
-<a id="TMP_07d6"></a>
+<a id="TMP_131f"></a>
 
 # Interpreting the coefficients, scores, and eigenvalues
-<a id="TMP_93f5"></a>
+<a id="TMP_50ef"></a>
 
 ## Coefficients
 
@@ -755,7 +755,7 @@ We see that:
 -  Component 3 represents age and blood pressure\-related variables 
 -  Component 4 is closely related to pulse 
 -  Subsequent components don't contribute much more information 
-<a id="TMP_2d8e"></a>
+<a id="TMP_24b8"></a>
 
 ## Scores
 
@@ -771,7 +771,7 @@ title( "Scores and Variables" )
 ```
 
 ![figure_14.png](Seminar01_PCA_media/figure_14.png)
-<a id="TMP_64a4"></a>
+<a id="TMP_1d57"></a>
 
 ## Eigenvalues
 
@@ -802,20 +802,20 @@ grid on
 
 ![figure_16.png](Seminar01_PCA_media/figure_16.png)
 
-<a id="TMP_2109"></a>
+<a id="TMP_429e"></a>
 
 # Deciding how many components to keep
-<a id="TMP_1f71"></a>
+<a id="TMP_1966"></a>
 
 ## The elbow method
 
 In this method, we look for an elbow (a point at which the gradient changes rapidly) in the eigenvalue plot. For this data set, we could choose to keep 4 components.
 
-<a id="TMP_2b3b"></a>
+<a id="TMP_1bd5"></a>
 
 ## The white noise method
 
-With this approach, we take only those principal components which contain more information than what we'd obtain from applying the same algorithm to a data set comprised of white noise. Since we standardized our data and worked from the correlation matrix, this is equivalent to keeping those principal components with a variance above 1.
+With this approach, we take only those principal components which contain more information than what we'd obtain from applying the same algorithm to a data set comprised of white noise (i.e., data sampled from the standard normal distribution $N(0,1)$ . Since we standardized our data and worked from the correlation matrix, this is equivalent to keeping those principal components with a variance above 1.
 
 ```matlab
 figure
@@ -827,7 +827,7 @@ title( "Eigenvalues from PCA" )
 grid on
 yline( 1, "LineWidth", 2, "Label", "White noise threshold" )
 ```
-<a id="TMP_0cc9"></a>
+<a id="TMP_9853"></a>
 
 ## The broken stick method
 
@@ -850,9 +850,9 @@ legend( "Eigenvalues", "White noise threshold", "Broken stick method" )
 
 ![figure_17.png](Seminar01_PCA_media/figure_17.png)
 
-With the broken stick method, we would keep three components.
+Following the broken stick method, we would keep two components.
 
-<a id="TMP_0b6b"></a>
+<a id="TMP_2838"></a>
 
 # Grouping variables
 
@@ -873,15 +873,14 @@ Observations:
 -  Parallel vectors are correlated 
 -  Long vectors are well\-represented in the given coordinates 
 -  Short vectors are not well\-represented in the given coordinates (e.g., pulse) 
-<a id="TMP_2ab4"></a>
+<a id="TMP_289f"></a>
 
 # Selecting representative features
 
 If our objective is to select features for a model, we may want to work with observed data rather than principal components. This could be for ease of interpretation \- it's easier to understand a variable such as height or weight, but principal components cannot be observed directly \- they are linear combinations of features and so exist only in an abstract sense. We might also want to select a representative feature from each of the groups of features that we've previously identified.
 
 
-We can perform another orthgonal transformation to maximize the alignment between the principal component axes and the original variables.
-
+We can perform another orthogonal transformation to maximize the correlation between the principal component axes and the original variables.
 
 ```matlab
 A = rotatefactors( V );
@@ -895,7 +894,7 @@ title( "After Factor Rotation" )
 
 The disadvantage of this approach is that by selecting original variables instead of principal components, we reintroduce mutual correlation. Unless the selected variables are already uncorrelated, they will not explain as much variance as selecting the same number of principal components.
 
-<a id="TMP_8676"></a>
+<a id="TMP_392c"></a>
 
 # PCA for image feature extraction
 
@@ -933,7 +932,7 @@ title( "Number of components: " + numComponents )
 ```
 
 ![figure_20.png](Seminar01_PCA_media/figure_20.png)
-<a id="TMP_970b"></a>
+<a id="TMP_3bf5"></a>
 
 # Outlier analysis
 
