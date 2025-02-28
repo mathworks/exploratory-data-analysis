@@ -236,6 +236,11 @@ disp(importantFeatures)
     "NMHC(GT)"
 ```
 
+Benzene (C6H6) is considered a precursor to ozone formation, meaning it can chemically react with other pollutants in the atmosphere, particularly in the presence of sunlight, to produce ozone as a secondary pollutant; especially when combined with nitrogen oxides (NOx). 
+
+
+Ground\-level ozone is a harmful air pollutant that's closely linked to air quality. It's a major component of smog, and it can damage human health and the environment. 
+
 # Multivariate outlier detection methods
 
 ![image_3.png](Seminar02_Outliers_media/image_3.png)
@@ -290,15 +295,6 @@ outliersTT = dataTT;
 outliersTT.T2Outlier = t2OutlierIdx;
 ```
 
-Stacked plot the picked important features from PCA and the outliers.
-
-```matlab
-figure
-stackedplot(outliersTT, [importantFeatures; "T2Outlier"])
-```
-
-![figure_9.png](Seminar02_Outliers_media/figure_9.png)
-
 This  $t^2$ statistics method is based on PCA, since PCA only use linear correlation of features, if features have non\-linear correlations, it is hard to be picked up by PCA.
 
 ## t\-SNE
@@ -351,7 +347,7 @@ ylabel("tsneEmbeddingsY")
 zlabel("tsneEmbeddingsZ")
 ```
 
-![figure_10.png](Seminar02_Outliers_media/figure_10.png)
+![figure_9.png](Seminar02_Outliers_media/figure_9.png)
 
 Euclidean Distance Vs Mahalanobis Distance :
 
@@ -377,7 +373,7 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S,robustcovOutlierIdx);
 ```
 
-![figure_11.png](Seminar02_Outliers_media/figure_11.png)
+![figure_10.png](Seminar02_Outliers_media/figure_10.png)
 
 Tabulate the outliers, and display the results.
 
@@ -432,7 +428,7 @@ yline(epsilon, "Color","r","Label","epsilon = "+ epsilon,"LabelHorizontalAlignme
 hold off
 ```
 
-![figure_12.png](Seminar02_Outliers_media/figure_12.png)
+![figure_11.png](Seminar02_Outliers_media/figure_11.png)
 
 Perform dbscan using the chosen parameters `epsilon` and `minpts`.
 
@@ -452,7 +448,7 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S, DBSCANOutlierIdx)
 ```
 
-![figure_13.png](Seminar02_Outliers_media/figure_13.png)
+![figure_12.png](Seminar02_Outliers_media/figure_12.png)
 
 Tabulate the results and visualize in a stacked plot.
 
@@ -491,7 +487,7 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S,LOFOutlierIdx)
 ```
 
-![figure_14.png](Seminar02_Outliers_media/figure_14.png)
+![figure_13.png](Seminar02_Outliers_media/figure_13.png)
 
 For all model\-based the outlier detection methods, if a new contamination fraction is set, we don't need to retrain the outlier models, only use the already computed scores to find the outliers under the new contamination fraction.
 
@@ -502,7 +498,7 @@ newLOFOutlierIdx = lof_scores > newScoreThreshold;
 visualizeOutliersinPCA(S,newLOFOutlierIdx)
 ```
 
-![figure_15.png](Seminar02_Outliers_media/figure_15.png)
+![figure_14.png](Seminar02_Outliers_media/figure_14.png)
 
 Tabulate the outliers, and display the results.
 
@@ -545,7 +541,7 @@ Visualize the data in the first three principal components and highlight the out
 visualizeOutliersinPCA(S, iforestOutlierIdx)
 ```
 
-![figure_16.png](Seminar02_Outliers_media/figure_16.png)
+![figure_15.png](Seminar02_Outliers_media/figure_15.png)
 
 Visualize the scores in histogram.
 
@@ -553,7 +549,7 @@ Visualize the scores in histogram.
 scoreHistogram(iforestScores, iforestMdl.ScoreThreshold, contaminationFraction)
 ```
 
-![figure_17.png](Seminar02_Outliers_media/figure_17.png)
+![figure_16.png](Seminar02_Outliers_media/figure_16.png)
 
 Tabulate the outliers, and display the results.
 
@@ -577,7 +573,7 @@ Visualize the data in the first three principal components and highlight the out
 visualizeOutliersinPCA(S, rforestOutlierIdx)
 ```
 
-![figure_18.png](Seminar02_Outliers_media/figure_18.png)
+![figure_17.png](Seminar02_Outliers_media/figure_17.png)
 
 Tabulate the outliers, and display the results.
 
@@ -591,7 +587,7 @@ Visualize the scores in histogram.
 scoreHistogram(rforestScores, rforestMdl.ScoreThreshold, contaminationFraction)
 ```
 
-![figure_19.png](Seminar02_Outliers_media/figure_19.png)
+![figure_18.png](Seminar02_Outliers_media/figure_18.png)
 
 ### One\-class SVM
 
@@ -623,7 +619,7 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S,OCSVMOutlierIdx)
 ```
 
-![figure_20.png](Seminar02_Outliers_media/figure_20.png)
+![figure_19.png](Seminar02_Outliers_media/figure_19.png)
 
 Visualize the scores in histogram.
 
@@ -631,7 +627,7 @@ Visualize the scores in histogram.
 scoreHistogram(OCSVMScores, OCSVMMdl.ScoreThreshold, contaminationFraction)
 ```
 
-![figure_21.png](Seminar02_Outliers_media/figure_21.png)
+![figure_20.png](Seminar02_Outliers_media/figure_20.png)
 
 OCSVM can be a bit slow due to the nonlinear kernels. Might not separate the outliers correctly around the margin.
 
@@ -694,7 +690,7 @@ figure
 view(autoenc)
 ```
 
-![figure_22.png](Seminar02_Outliers_media/figure_22.png)
+![figure_21.png](Seminar02_Outliers_media/figure_21.png)
 
 Obtain the reconstructed features from the autoencoder model using the `predict` function.
 
@@ -725,7 +721,7 @@ bar(ETranspose)
 title("Reconstruction Error")
 ```
 
-![figure_23.png](Seminar02_Outliers_media/figure_23.png)
+![figure_22.png](Seminar02_Outliers_media/figure_22.png)
 
 Set the reconstruction threshold for outliers.
 
@@ -747,7 +743,7 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S, AutoEncoderOutlierIdx)
 ```
 
-![figure_24.png](Seminar02_Outliers_media/figure_24.png)
+![figure_23.png](Seminar02_Outliers_media/figure_23.png)
 
 Visualize the scores in histogram.
 
@@ -755,7 +751,7 @@ Visualize the scores in histogram.
 scoreHistogram(ETranspose, threshold, contaminationFraction)
 ```
 
-![figure_25.png](Seminar02_Outliers_media/figure_25.png)
+![figure_24.png](Seminar02_Outliers_media/figure_24.png)
 
 Tabulate the outliers, and display the results.
 
@@ -765,21 +761,32 @@ outliersTT.AutoEncoderOutlier = AutoEncoderOutlierIdx;
 
 # Combine all the methods
 
-Can use majority vote or other methods like weighted sum can be applied. For example, if you have a small amount of labeled outliers, you can use true positive ratio to weight each method.
+Can use majority vote or other methods like weighted sum can be applied. For example, if you have a small amount of labeled outliers, you can use true positive ratio to weight each method's importance in the final outlier decision.
 
 ```matlab
 outliersTT.FinalOutlier = mean(outliersTT{:,["T2Outlier","AutoEncoderOutlier","DBSCANOutlier","IforestOutlier","LOFOutlier","OCSVMOutlier","rforestOutlier","robustcovOutlier"]},2) >=0.5;
 visualizeOutliersinPCA(S, outliersTT.FinalOutlier )
 ```
 
-![figure_26.png](Seminar02_Outliers_media/figure_26.png)
+![figure_25.png](Seminar02_Outliers_media/figure_25.png)
+
+Visualize the final outliers in the important features identified by PCA.
 
 ```matlab
 figure
-stackedplot(outliersTT, [importantFeatures;"FinalOutlier"])
+tiledlayout("flow")
+for k = 1: length(importantFeatures)
+    nexttile
+plot(outliersTT.Properties.RowTimes, outliersTT.(importantFeatures(k)), "Color",[0.5, 0.5, 0.5])
+hold on
+scatter(outliersTT.Properties.RowTimes(outliersTT.FinalOutlier),outliersTT{outliersTT.FinalOutlier,importantFeatures(k)},  "Marker","x")
+hold off
+legend(["Original data", "Outliers"], "Location","best")
+title(importantFeatures(k))
+end
 ```
 
-![figure_27.png](Seminar02_Outliers_media/figure_27.png)
+![figure_26.png](Seminar02_Outliers_media/figure_26.png)
 
 **Helper Functions**
 
