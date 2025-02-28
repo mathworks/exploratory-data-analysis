@@ -180,11 +180,12 @@ scatter(dataTT.Properties.RowTimes(quantileOutlierIdx), ozone(quantileOutlierIdx
 % Moving median outliers
 scatter(dataTT.Properties.RowTimes(moveMedianOutlierIdx), ozone(moveMedianOutlierIdx), "MarkerEdgeColor","r")
 % Iforest outliers
-scatter(dataTT.Properties.RowTimes(iforestOutlierIdx), ozone(iforestOutlierIdx), "MarkerEdgeColor","k")
+scatter(dataTT.Properties.RowTimes(iforestOutlierIdx), ozone(iforestOutlierIdx), "MarkerEdgeColor","k","Marker","+")
 hold off
 xlim tight
 legend(["Input data","Quantile("+nnz(quantileOutlierIdx)+")", ...
     "Moving median("+nnz(moveMedianOutlierIdx)+")", "Isolation Forest ("+nnz(iforestOutlierIdx)+")"], "Location","best")
+title("Ozone Data and Outliers")
 ```
 
 ![figure_2.png](Seminar02_Outliers_media/figure_2.png)
@@ -405,7 +406,7 @@ Tabulate the outliers, and display the results.
 outliersTT.robustcovOutlier = robustcovOutlierIdx;
 ```
 
-##  DBSCAN method
+## DBSCAN method
 
 [DBSCAN](matlab: doc dbscan) (Density\-based spatial clustering of applications with noise) is a density\-based clustering algorithm. DBSCAN is frequently used  to analyze and segment point clouds, effectively identifying clusters of points within a 3D space based on their density, making it particularly useful for tasks like object detection and surface segmentation in applications like autonomous driving and 3D reconstruction where point cloud data is prevalent. Doc example about point clouds [https://uk.mathworks.com/help/vision/point\-cloud\-processing.html](https://uk.mathworks.com/help/vision/point-cloud-processing.html)
 
