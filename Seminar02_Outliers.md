@@ -154,7 +154,7 @@ histogram(ozone, "NumBins",50)
 title("Ozone Histogram( mean: "+ round(mean(ozone), 2)+", std:"+round(std(ozone), 2)+")")
 nexttile
 boxchart(ozone, "Orientation","horizontal", "JitterOutliers","on")
-yticklabels("ozone")
+yticklabels("Ozone")
 ```
 
 ![figure_1.png](Seminar02_Outliers_media/figure_1.png)
@@ -165,17 +165,21 @@ yticklabels("ozone")
 Try out a few appropriate outlier detection methods for this variable e.g., quantile, moving median, isolation forest etc.
 
 ```matlab
+% Quantile method
 quantileOutlierIdx = isoutlier(ozone,"quartiles");
+% Moving median method
 moveMedianOutlierIdx = isoutlier(ozone,"movmedian",9);
+% Iforest method
 [mdl, iforestOutlierIdx] = iforest(ozone, "ContaminationFraction",0.03);
 figure
+% Plot the original data.
 plot(dataTT.Properties.RowTimes, ozone, "Color",[0.5, 0.5, 0.5])
 hold on
-% Quantile method
+% Quantile outliers
 scatter(dataTT.Properties.RowTimes(quantileOutlierIdx), ozone(quantileOutlierIdx), "MarkerEdgeColor","b", "Marker","x")
-% Move median method
+% Moving median outliers
 scatter(dataTT.Properties.RowTimes(moveMedianOutlierIdx), ozone(moveMedianOutlierIdx), "MarkerEdgeColor","r")
-% iforest method
+% Iforest outliers
 scatter(dataTT.Properties.RowTimes(iforestOutlierIdx), ozone(iforestOutlierIdx), "MarkerEdgeColor","k")
 hold off
 xlim tight
@@ -192,7 +196,7 @@ For univarite outlier detection, we can use the Clean Outlier Data Live Task.
 [rho, pValues] = corr(dataNorm,"Type","Pearson");
 featureNames = string(dataTT.Properties.VariableNames);
 figure
-heatmap(featureNames, featureNames, rho, "Colormap", cool() )
+heatmap(featureNames, featureNames, rho, "Colormap", cool())
 title("Data Correlation")
 ```
 
@@ -256,10 +260,9 @@ disp(importantFeatures)
     "RH"
 ```
 
-Benzene (C6H6) is considered a precursor to ozone formation, meaning it can chemically react with other pollutants in the atmosphere, particularly in the presence of sunlight, to produce ozone as a secondary pollutant; especially when combined with nitrogen oxides (NOx). 
-
-
-Ground\-level ozone is a harmful air pollutant that's closely linked to air quality. It's a major component of smog, and it can damage human health and the environment. 
+-  C6H6(GT): true hourly averaged Benzene concentration in microg/m^3 (reference analyzer). Benzene (C6H6) is considered a precursor to ozone formation, meaning it can chemically react with other pollutants in the atmosphere, particularly in the presence of sunlight, to produce ozone as a secondary pollutant; especially when combined with nitrogen oxides (NOx). Ground\-level ozone is a harmful air pollutant that's closely linked to air quality. It's a major component of smog, and it can damage human health and the environment. 
+-  T: temperature ( $^{\circ } C$ ) 
+-  RH: relative humidity (%) 
 
 # Multivariate outlier detection methods
 
@@ -315,7 +318,7 @@ outliersTT = dataTT;
 outliersTT.T2Outlier = t2OutlierIdx;
 ```
 
-This  $t^2$ statistics method is based on PCA, since PCA only use linear correlation of features, if features have non\-linear correlations, it is hard to be picked up by PCA.
+This  $t^2$ statistics method is based on PCA, since PCA only use linear correlation of features, if features have non\-linear correlations, such nonlinear relationship is hard to be picked up by PCA.
 
 ## t\-SNE
 
@@ -341,7 +344,7 @@ rng default
 
 ## Mahalanobis distance
 
-Visualize the [Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance) between a point *x* and the center of a multivariate distribution $Q$ :  how many standard deviations away x is from the mean of $Q$ . This distance is zero for *x* at the mean of $Q$ and grows as *x* moves away from the mean along each principal component axis. By default, the data set is assumed to follow a multivariate normal distribution.
+[Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance) measures the distance between a point *x* and the center of a multivariate distribution $Q$ :  how many standard deviations away x is from the mean of $Q$ . This distance is zero for *x* at the mean of $Q$ and grows as *x* moves away from the mean along each principal component axis. By default, the data is assumed to follow a multivariate normal distribution. Differs from Euclidean distance which treats all dimensions equally; Mahalanobis distance scales distances based on the variability and correlations in the data.
 
 
 Given a probability distribution $Q$ , with mean $\mu$ and positive semi\-definite covariance matrix $\sum$ , the Mahalanobis distance $d_M (X)=\sqrt{(X-\mu )\cdot \sum^{-1} \cdot (X-\mu )^T }$ . 
@@ -365,6 +368,7 @@ hold off
 xlabel("tsneEmbeddingsX")
 ylabel("tsneEmbeddingsY")
 zlabel("tsneEmbeddingsZ")
+title("Air Quality Data in 3D tSNE Representation")
 ```
 
 ![figure_9.png](Seminar02_Outliers_media/figure_9.png)
@@ -484,17 +488,17 @@ outliersTT.DBSCANOutlier = DBSCANOutlierIdx;
 The local outlier factor ([LOF](matlab: doc lof)) algorithm detects outliers based on the *relative density* of an observation with respect to the surrounding neighborhood. Outliers are points that have a substantially lower density than their neighbors. 
 
 
-The locality is given by \*k \*nearest neighbors, whose distance is used to estimate the density. In the following figure, point A has a much lower density than its neighbors. By default, *k* is set as $min(20,n-1)$ , where n is the number of observations.
+The locality is given by  *k* nearest neighbors, whose distance is used to estimate the density. In the following figure, point A has a much lower density than its neighbors. By default, *k* is set as $min(20,n-1)$ , where n is the number of observations.
 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![image_5.png](Seminar02_Outliers_media/image_5.png)
 
 
 
-**Unsupervised workflow:** We don't know which observations are anomaly, but we can give an empirical guess of how much percentage of data is anomaly.
+**Unsupervised workflow:** We don't know which observations are anomaly, but we can give an empirical guess of how much percentage (or fraction) of data is anomaly.
 
 
-Perform lof outlier detection. For normal observations, the local outlier factor scores are less than or close to 1, indicating that the local reachability density of an observation is higher than or similar to its neighbors. A local outlier factor score is greater than 1 can indicate an anomaly. 
+For normal observations, the local outlier factor scores are less than or close to 1, indicating that the local reachability density of an observation is higher than or similar to its neighbors. A local outlier factor score is greater than 1 can indicate an anomaly. 
 
 ```matlab
 [lofMdl,LOFOutlierIdx,lof_scores] = lof(S(:,1:numComponents), ...
@@ -700,7 +704,7 @@ else
 end
 ```
 
-`trainAutoencoder` only provides one hidden layer. You can define more complicated deep learning network for the autoencoder, for example, [Time Series Anomaly Detection Using Deep Learning](https://uk.mathworks.com/help/deeplearning/ug/time-series-anomaly-detection-using-deep-learning.html). MATLAB also provides built\-in function [`deepSignalAnomalyDetector`](matlab: doc deepSignalAnomalyDetector) in Signal Processing Toolbox.
+`trainAutoencoder` only provides one hidden layer. You can [train stacked autoencoders](http://127.0.0.1:60369/static/help/deeplearning/ug/train-stacked-autoencoders-for-image-classification.html) or define more complicated deep learning network for the autoencoder, for example, [Time Series Anomaly Detection Using Deep Learning](https://uk.mathworks.com/help/deeplearning/ug/time-series-anomaly-detection-using-deep-learning.html). MATLAB also provides built\-in function [`deepSignalAnomalyDetector`](matlab: doc deepSignalAnomalyDetector) in Signal Processing Toolbox to use either LSTM Autoencoder or convolutional encoder to detect outliers in signals.
 
 
 View the autoencoder graphic diagram.
@@ -725,7 +729,7 @@ mseError = mse(feaTrans,feaReconstructed, "all")
 ```
 
 ```matlabTextOutput
-mseError = 0.0042
+mseError = 0.0048
 ```
 
 ```matlab
@@ -750,7 +754,7 @@ threshold = quantile(ETranspose,1-contaminationFraction)
 ```
 
 ```matlabTextOutput
-threshold = 0.4365
+threshold = 0.4473
 ```
 
 ```matlab
@@ -823,7 +827,7 @@ xlabel("PC1")
 ylabel("PC2")
 zlabel("PC3")
 legend(["Observations", "Outliers"], "Location","best")
-title("Outliers in PC space")
+title("Outliers in Principal Component Space")
 subtitle("Outliers No.: "+ sum(outlierIdx))
 end
 function scoreHistogram(scores, scoreThreshold, contaminationFraction)
