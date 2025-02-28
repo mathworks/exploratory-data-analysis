@@ -57,8 +57,11 @@ Outliers (or anomaly) are observations that deviate significantly from a dataset
 
 **Outlier detection vs novelty detection:**
 
--  Outlier detection looks for "abnormal" outliers within the known data \->  data already contains outliers 
--  Novelty detection aims to identify new data points that deviate from the known pattern \-> data is assumed to be outlier\-free 
+-  Outlier detection looks for "abnormal" outliers within the known data \->  known data already contains outliers 
+-  Novelty detection aims to identify new data points that deviate from the known pattern \-> known data is assumed to be outlier\-free 
+
+**Outlier types:** point outliers, segment outliers, time series outliers.
+
 
 ![image_1.png](Seminar02_Outliers_media/image_1.png)
 
@@ -97,12 +100,13 @@ Read in as timetable and only keep one column of datetime as the rownames.
 dataTT = readtimetable("AirQualityUCI.xlsx", "VariableNamingRule","preserve");
 dataTT.Properties.RowTimes = dataTT.Properties.RowTimes+dataTT.Time;
 dataTT.Time =[];
+dataTT= standardizeMissing(dataTT,-200);
+dataTT = retime(dataTT,"hourly", "nearest");
 ```
 
 Stacked plot the data
 
 ```matlab
-clf
 figure
 stackedplot(dataTT)
 ```
@@ -215,37 +219,6 @@ title( "Scores and Variables")
 
 ![figure_5.png](Seminar02_Outliers_media/figure_5.png)
 
-It seems the data can be grouped in two clusters: a bigger cluster and a smaller one. We can use KMeans to do the clustering and view the two clusters in PCA space.
-
-```matlab
-rng("default")
-clusterIdx = kmeans(S(:, 1:3), 2);
-tabulate(clusterIdx)
-```
-
-```matlabTextOutput
-  Value    Count   Percent
-      1     8991     96.09%
-      2      366      3.91%
-```
-
-After tabulate the clustering result, we might have about 4% of outliers.
-
-```matlab
-figure
-scatter3(S(clusterIdx==1, 1), S(clusterIdx==1,2), S(clusterIdx==1,3))
-hold on
-scatter3(S(clusterIdx==2, 1), S(clusterIdx==2,2), S(clusterIdx==2,3))
-hold off
-legend(["Cluster 1", "Cluster 2"], "Location","best")
-xlabel("Component 1")
-ylabel("Component 2")
-zlabel("Component 3")
-title("K-Means clustering")
-```
-
-![figure_6.png](Seminar02_Outliers_media/figure_6.png)
-
 To understand which of the original features are important to the reduced PCA components, we can use a post\-hoc rotation provided by [**`rotatefactors`**](matlab: doc rotatefactors).
 
 ```matlab
@@ -258,8 +231,8 @@ disp(importantFeatures)
 
 ```matlabTextOutput
     "C6H6(GT)"
-    "NOx(GT)"
-    "NO2(GT)"
+    "AH"
+    "RH"
     "NMHC(GT)"
 ```
 
@@ -275,11 +248,11 @@ Hotelling’s $t^2$  statistic is a statistical measure used to assess whether a
 Set the outlier threshold between 1% to  5% (can use  [`prctile`](matlab: doc prctile) `or`  [`quantile`](matlab: doc quantile)). 
 
 ```matlab
-contaminationFraction = 0.04;
+contaminationFraction = 0.03;
 t2Threshold = quantile(t2, 1-contaminationFraction);
 t2OutlierIdx = t2 > t2Threshold;
 figure
-histogram(t2, "Normalization","cdf", "FaceAlpha",0.1)
+histogram(t2, "Normalization","cdf", "FaceAlpha",0.1, "EdgeAlpha",0.4)
 hold on
 yline(1-contaminationFraction, "Label","Cumulative probability="+(1-contaminationFraction), ...
     "Color","r","LineWidth",2,"LabelHorizontalAlignment","left","LabelColor","m", "LabelVerticalAlignment","bottom")
@@ -287,7 +260,7 @@ xline(t2Threshold, "Color","r", "Label","Threshold value="+round(t2Threshold,2),
 title("t2 Emperical CDF")
 ```
 
-![figure_7.png](Seminar02_Outliers_media/figure_7.png)
+![figure_6.png](Seminar02_Outliers_media/figure_6.png)
 
 Confirm it is a reasonable percentage by visualizing the sorted  $t^2$ values.
 
@@ -296,11 +269,11 @@ figure
 plot((1:length(t2))/length(t2)*100, sort(t2, "descend"))
 xlabel("Percentage of data")
 ylabel("t^2-statistic")
-xline(contaminationFraction, "Label", "Outlier threshold = "+contaminationFraction*100+"%")
+xline(contaminationFraction*100, "Label", "Outlier fraction = "+contaminationFraction*100+"%")
 title("t^2-statistic Outlier fraction")
 ```
 
-![figure_8.png](Seminar02_Outliers_media/figure_8.png)
+![figure_7.png](Seminar02_Outliers_media/figure_7.png)
 
 Visualize in the first three principal components and highlight the outliers.
 
@@ -308,7 +281,7 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S,t2OutlierIdx);
 ```
 
-![figure_9.png](Seminar02_Outliers_media/figure_9.png)
+![figure_8.png](Seminar02_Outliers_media/figure_8.png)
 
 Tabulate the outliers, and display the results.
 
@@ -324,7 +297,7 @@ figure
 stackedplot(outliersTT, [importantFeatures; "T2Outlier"])
 ```
 
-![figure_10.png](Seminar02_Outliers_media/figure_10.png)
+![figure_9.png](Seminar02_Outliers_media/figure_9.png)
 
 This  $t^2$ statistics method is based on PCA, since PCA only use linear correlation of features, if features have non\-linear correlations, it is hard to be picked up by PCA.
 
@@ -347,12 +320,12 @@ Steps:
 4. Initialize a set of random Gaussian\-distributed points Y.`tsne` then calculates the similarities between each pair of points in Y. The probability model $q_{ij}$ of the distribution of the distances between points $y_i$ and $y_j$ is $q_{ij} =\frac{(1+\|y_i -y_j {\|}^2 )^{-1} }{\sum_k \sum_{l\not= k} (1+\|y_k -y_l {\|}^2 )^{-1} }$ . The Kullback\-Leibler divergence between the joint distribution *P* and *Q* is $KL(P\|Q)=\sum_j \sum_{i\not= j} p_{ij} log\frac{p_{ij} }{q_i j}$
 ```matlab
 rng default
-[tsneEmbeddings, loss] = tsne(data,"NumDimensions",3, "NumPCAComponents",3,"Standardize",true, "Distance","mahalanobis");
+[tsneEmbeddings, loss] = tsne(data,"NumDimensions",3, "NumPCAComponents",numComponents,"Standardize",true, "Distance","mahalanobis");
 ```
 
 ## Mahalanobis distance
 
-Visualize the [Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance) between a point *x* and the center of a multivariate distribution $Q$ :  how many standard deviations away x is from the mean of $Q$ . This distance is zero for *x* at the mean of $Q$ and grows as *x* moves away from the mean along each principal component axis. By default, the data set follows a multivariate normal distribution.
+Visualize the [Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance) between a point *x* and the center of a multivariate distribution $Q$ :  how many standard deviations away x is from the mean of $Q$ . This distance is zero for *x* at the mean of $Q$ and grows as *x* moves away from the mean along each principal component axis. By default, the data set is assumed to follow a multivariate normal distribution.
 
 
 Given a probability distribution $Q$ , with mean $\mu$ and positive semi\-definite covariance matrix $\sum$ , the Mahalanobis distance $d_M (X)=\sqrt{(X-\mu )\cdot \sum^{-1} \cdot (X-\mu )^T }$ . 
@@ -361,7 +334,7 @@ Given a probability distribution $Q$ , with mean $\mu$ and positive semi\-defini
 figure
 ax = axes;
 scatter3(tsneEmbeddings(:,1), tsneEmbeddings(:, 2), tsneEmbeddings(:,3), ...
-    "filled", "MarkerFaceColor",[ 0.0620,0.2580,0.5010], "MarkerFaceAlpha",0.8)
+    "filled", "MarkerFaceColor",[ 0.0620,0.50,0.5010], "MarkerFaceAlpha",0.8)
 hold on
 m = mean(tsneEmbeddings);
 M = cov(tsneEmbeddings);
@@ -378,7 +351,7 @@ ylabel("tsneEmbeddingsY")
 zlabel("tsneEmbeddingsZ")
 ```
 
-![figure_11.png](Seminar02_Outliers_media/figure_11.png)
+![figure_10.png](Seminar02_Outliers_media/figure_10.png)
 
 Euclidean Distance Vs Mahalanobis Distance :
 
@@ -388,7 +361,10 @@ Euclidean Distance Vs Mahalanobis Distance :
 
 ## Robust multivariate covariance method
 
-Use the [`robustcov`](http://127.0.0.1:62846/static/help/stats/robustcov.html) function to compute robust Mahalanobis distances and robust estimates for the mean and covariance of the data, which are less sensitive to outliers than the estimates from the `cov` and `mean` functions. By default, the function assumes that the data set follows a multivariate normal distribution.
+Use the [`robustcov`](http://127.0.0.1:62846/static/help/stats/robustcov.html) function to compute robust Mahalanobis distances and robust estimates for the mean and covariance of the data, which are less sensitive to outliers than the estimates from the `cov` and `mean` functions. By default, the function assumes that the data set follows a multivariate normal distribution. If this assumption doesn't hold, this method might not work very well.
+
+
+ `robustcov` minimizes the covariance determinant over (1\-contaminationFraction)\*100% of the observations.
 
 ```matlab
 [sigma,mu,s_robustcov,robustcovOutlierIdx] = robustcov(S(:,1:numComponents), ...
@@ -401,7 +377,7 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S,robustcovOutlierIdx);
 ```
 
-![figure_12.png](Seminar02_Outliers_media/figure_12.png)
+![figure_11.png](Seminar02_Outliers_media/figure_11.png)
 
 Tabulate the outliers, and display the results.
 
@@ -448,15 +424,15 @@ grid on
 hold on
 ```
 
-The knee appears to be around 0.3; therefore, set the value of `epsilon` to this range.
+The knee appears to be around 0.75; therefore, set the value of `epsilon` to this range.
 
 ```matlab
-epsilon = 0.3;
+epsilon = 0.75;
 yline(epsilon, "Color","r","Label","epsilon = "+ epsilon,"LabelHorizontalAlignment","left", "LabelColor","m")
 hold off
 ```
 
-![figure_13.png](Seminar02_Outliers_media/figure_13.png)
+![figure_12.png](Seminar02_Outliers_media/figure_12.png)
 
 Perform dbscan using the chosen parameters `epsilon` and `minpts`.
 
@@ -476,14 +452,12 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S, DBSCANOutlierIdx)
 ```
 
-![figure_14.png](Seminar02_Outliers_media/figure_14.png)
+![figure_13.png](Seminar02_Outliers_media/figure_13.png)
 
 Tabulate the results and visualize in a stacked plot.
 
 ```matlab
 outliersTT.DBSCANOutlier = DBSCANOutlierIdx;
-% figure
-% stackedplot(outliersTT, [importantFeatures; "T2Outlier"; "DBSCANOutlier"])
 ```
 
 -  DBSCAN is fast across three or more dimensions and intuitive. However, selecting the optimal parameters can be tricky, and the model needs to be re\-calibrated every time new data needs analysis. 
@@ -517,7 +491,7 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S,LOFOutlierIdx)
 ```
 
-![figure_15.png](Seminar02_Outliers_media/figure_15.png)
+![figure_14.png](Seminar02_Outliers_media/figure_14.png)
 
 For all model\-based the outlier detection methods, if a new contamination fraction is set, we don't need to retrain the outlier models, only use the already computed scores to find the outliers under the new contamination fraction.
 
@@ -528,14 +502,12 @@ newLOFOutlierIdx = lof_scores > newScoreThreshold;
 visualizeOutliersinPCA(S,newLOFOutlierIdx)
 ```
 
-![figure_16.png](Seminar02_Outliers_media/figure_16.png)
+![figure_15.png](Seminar02_Outliers_media/figure_15.png)
 
 Tabulate the outliers, and display the results.
 
 ```matlab
 outliersTT.LOFOutlier = LOFOutlierIdx;
-% figure
-% stackedplot(outliersTT, [importantFeatures; "T2Outlier"; "DBSCANOutlier";"LOFOutlier"])
 ```
 
 -  LOF can work with either all continuous or all categorical variables.  
@@ -573,7 +545,7 @@ Visualize the data in the first three principal components and highlight the out
 visualizeOutliersinPCA(S, iforestOutlierIdx)
 ```
 
-![figure_17.png](Seminar02_Outliers_media/figure_17.png)
+![figure_16.png](Seminar02_Outliers_media/figure_16.png)
 
 Visualize the scores in histogram.
 
@@ -581,14 +553,12 @@ Visualize the scores in histogram.
 scoreHistogram(iforestScores, iforestMdl.ScoreThreshold, contaminationFraction)
 ```
 
-![figure_18.png](Seminar02_Outliers_media/figure_18.png)
+![figure_17.png](Seminar02_Outliers_media/figure_17.png)
 
 Tabulate the outliers, and display the results.
 
 ```matlab
 outliersTT.IforestOutlier = iforestOutlierIdx;
-% figure
-% stackedplot(outliersTT, [importantFeatures; "T2Outlier"; "DBSCANOutlier";"LOFOutlier"; "IforestOutlier"])
 ```
 
 ### **Robust Random Cut Forest**
@@ -607,7 +577,7 @@ Visualize the data in the first three principal components and highlight the out
 visualizeOutliersinPCA(S, rforestOutlierIdx)
 ```
 
-![figure_19.png](Seminar02_Outliers_media/figure_19.png)
+![figure_18.png](Seminar02_Outliers_media/figure_18.png)
 
 Tabulate the outliers, and display the results.
 
@@ -621,7 +591,7 @@ Visualize the scores in histogram.
 scoreHistogram(rforestScores, rforestMdl.ScoreThreshold, contaminationFraction)
 ```
 
-![figure_20.png](Seminar02_Outliers_media/figure_20.png)
+![figure_19.png](Seminar02_Outliers_media/figure_19.png)
 
 ### One\-class SVM
 
@@ -653,7 +623,7 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S,OCSVMOutlierIdx)
 ```
 
-![figure_21.png](Seminar02_Outliers_media/figure_21.png)
+![figure_20.png](Seminar02_Outliers_media/figure_20.png)
 
 Visualize the scores in histogram.
 
@@ -661,7 +631,7 @@ Visualize the scores in histogram.
 scoreHistogram(OCSVMScores, OCSVMMdl.ScoreThreshold, contaminationFraction)
 ```
 
-![figure_22.png](Seminar02_Outliers_media/figure_22.png)
+![figure_21.png](Seminar02_Outliers_media/figure_21.png)
 
 OCSVM can be a bit slow due to the nonlinear kernels. Might not separate the outliers correctly around the margin.
 
@@ -670,11 +640,7 @@ Tabulate the outliers, and display the results.
 
 ```matlab
 outliersTT.OCSVMOutlier = OCSVMOutlierIdx;
-figure
-stackedplot(outliersTT, [importantFeatures; "T2Outlier"; "DBSCANOutlier";"LOFOutlier"; "IforestOutlier"; "OCSVMOutlier"])
 ```
-
-![figure_23.png](Seminar02_Outliers_media/figure_23.png)
 
 ### Autoencoder
 
@@ -710,8 +676,8 @@ Then use the [trainAutoencoder](matlab: doc trainAutoencoder) to set the hidden 
 ```matlab
 doTrain = false;
 if doTrain
-    autoenc = trainAutoencoder(feaTrans, "hiddenSize",10, ...
-        "MaxEpochs", 800,"ShowProgressWindow", false);
+    autoenc = trainAutoencoder(feaTrans, "hiddenSize",20,"L2WeightRegularization",0.0002,"SparsityProportion",0.2, ...
+        "MaxEpochs", 1000,"ShowProgressWindow", false);
     save(fullfile("Data","autoenc.mat"), "autoenc")
 else
     load(fullfile("Data","autoenc.mat"))
@@ -728,7 +694,7 @@ figure
 view(autoenc)
 ```
 
-![figure_24.png](Seminar02_Outliers_media/figure_24.png)
+![figure_22.png](Seminar02_Outliers_media/figure_22.png)
 
 Obtain the reconstructed features from the autoencoder model using the `predict` function.
 
@@ -743,7 +709,7 @@ mseError = mse(feaTrans,feaReconstructed, "all")
 ```
 
 ```matlabTextOutput
-mseError = 0.0410
+mseError = 0.0071
 ```
 
 ```matlab
@@ -759,7 +725,7 @@ bar(ETranspose)
 title("Reconstruction Error")
 ```
 
-![figure_25.png](Seminar02_Outliers_media/figure_25.png)
+![figure_23.png](Seminar02_Outliers_media/figure_23.png)
 
 Set the reconstruction threshold for outliers.
 
@@ -768,7 +734,7 @@ threshold = quantile(ETranspose,1-contaminationFraction)
 ```
 
 ```matlabTextOutput
-threshold = 1.0826
+threshold = 0.5772
 ```
 
 ```matlab
@@ -781,7 +747,7 @@ Visualize in the first three principal components and highlight the outliers.
 visualizeOutliersinPCA(S, AutoEncoderOutlierIdx)
 ```
 
-![figure_26.png](Seminar02_Outliers_media/figure_26.png)
+![figure_24.png](Seminar02_Outliers_media/figure_24.png)
 
 Visualize the scores in histogram.
 
@@ -789,35 +755,31 @@ Visualize the scores in histogram.
 scoreHistogram(ETranspose, threshold, contaminationFraction)
 ```
 
-![figure_27.png](Seminar02_Outliers_media/figure_27.png)
+![figure_25.png](Seminar02_Outliers_media/figure_25.png)
 
 Tabulate the outliers, and display the results.
 
 ```matlab
 outliersTT.AutoEncoderOutlier = AutoEncoderOutlierIdx;
-% figure
-% stackedplot(outliersTT, [importantFeatures; ...
-%     "T2Outlier"; "DBSCANOutlier";"LOFOutlier"; "IforestOutlier"; "OCSVMOutlier"; "AutoEncoderOutlier"])
 ```
 
 # Combine all the methods
 
-Can use majority vote or other methods like weighted sum can be applied. For example, if you have a small amount of labeled outliers, you can use the percentage of correctly identified outliers by each method to weight the importance of the final decision from each method.
+Can use majority vote or other methods like weighted sum can be applied. For example, if you have a small amount of labeled outliers, you can use true positive ratio to weight each method.
 
 ```matlab
-finalOutlier = mean(outliersTT{:,14:end},2) >0.5;
-visualizeOutliersinPCA(S, finalOutlier)
+outliersTT.FinalOutlier = mean(outliersTT{:,["T2Outlier","AutoEncoderOutlier","DBSCANOutlier","IforestOutlier","LOFOutlier","OCSVMOutlier","rforestOutlier","robustcovOutlier"]},2) >=0.5;
+visualizeOutliersinPCA(S, outliersTT.FinalOutlier )
 ```
 
-![figure_28.png](Seminar02_Outliers_media/figure_28.png)
+![figure_26.png](Seminar02_Outliers_media/figure_26.png)
 
 ```matlab
-outliersTT.FinalOutlier = finalOutlier;
 figure
 stackedplot(outliersTT, [importantFeatures;"FinalOutlier"])
 ```
 
-![figure_29.png](Seminar02_Outliers_media/figure_29.png)
+![figure_27.png](Seminar02_Outliers_media/figure_27.png)
 
 **Helper Functions**
 
