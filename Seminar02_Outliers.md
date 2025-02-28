@@ -94,14 +94,35 @@ end
 
 # Import data
 
-Read in as timetable and only keep one column of datetime as the rownames.
+Read in as timetable and preprocess before outlier detection.
 
 ```matlab
 dataTT = readtimetable("AirQualityUCI.xlsx", "VariableNamingRule","preserve");
+```
+
+Datetime manipulation.
+
+```matlab
 dataTT.Properties.RowTimes = dataTT.Properties.RowTimes+dataTT.Time;
 dataTT.Time =[];
+```
+
+Standardize the missing because the original data uses \-200 to indicate missing entries.
+
+```matlab
 dataTT= standardizeMissing(dataTT,-200);
-dataTT = retime(dataTT,"hourly", "nearest");
+```
+
+90% of the data in the NMHC(GT) variable is missing, so we exclude this column first.
+
+```matlab
+dataTT.("NMHC(GT)")=[];
+```
+
+Remove the rest missing entries.
+
+```matlab
+dataTT= rmmissing(dataTT);
 ```
 
 Stacked plot the data
@@ -206,7 +227,7 @@ numComponents = find(cumsum(explained)>=varThreshold,1)
 ```
 
 ```matlabTextOutput
-numComponents = 4
+numComponents = 3
 ```
 
 Visualize the scores using the first three principal components. Show the positions of the original vectors in the new coordinate system.
@@ -231,9 +252,8 @@ disp(importantFeatures)
 
 ```matlabTextOutput
     "C6H6(GT)"
-    "AH"
+    "T"
     "RH"
-    "NMHC(GT)"
 ```
 
 Benzene (C6H6) is considered a precursor to ozone formation, meaning it can chemically react with other pollutants in the atmosphere, particularly in the presence of sunlight, to produce ozone as a secondary pollutant; especially when combined with nitrogen oxides (NOx). 
@@ -250,7 +270,7 @@ Ground\-level ozone is a harmful air pollutant that's closely linked to air qual
 Hotelling’s $t^2$  statistic is a statistical measure used to assess whether a multivariate observation is significantly different from a group mean. Essentially, Hotelling's $t^2$  statistic is a calculated value based on the squared Mahalanobis distance, incorporating sample size to enable hypothesis testing. 
 
 
-Set the outlier threshold between 1% to  5% (can use  [`prctile`](matlab: doc prctile) `or`  [`quantile`](matlab: doc quantile)). 
+Set the outlier fraction between 0.01 and 0.05. 
 
 ```matlab
 contaminationFraction = 0.03;
@@ -267,14 +287,14 @@ title("t2 Emperical CDF")
 
 ![figure_6.png](Seminar02_Outliers_media/figure_6.png)
 
-Confirm it is a reasonable percentage by visualizing the sorted  $t^2$ values.
+Confirm it is a reasonable outlier fraction by visualizing the sorted  $t^2$ values.
 
 ```matlab
 figure
-plot((1:length(t2))/length(t2)*100, sort(t2, "descend"))
+plot((1:length(t2))/length(t2), sort(t2, "descend"))
 xlabel("Percentage of data")
 ylabel("t^2-statistic")
-xline(contaminationFraction*100, "Label", "Outlier fraction = "+contaminationFraction*100+"%")
+xline(contaminationFraction, "Label", "Outlier fraction = "+contaminationFraction)
 title("t^2-statistic Outlier fraction")
 ```
 
@@ -420,10 +440,10 @@ grid on
 hold on
 ```
 
-The knee appears to be around 0.75; therefore, set the value of `epsilon` to this range.
+Set the knee value as the `epsilon` to this range.
 
 ```matlab
-epsilon = 0.75;
+epsilon = 0.5;
 yline(epsilon, "Color","r","Label","epsilon = "+ epsilon,"LabelHorizontalAlignment","left", "LabelColor","m")
 hold off
 ```
@@ -672,7 +692,7 @@ Then use the [trainAutoencoder](matlab: doc trainAutoencoder) to set the hidden 
 ```matlab
 doTrain = false;
 if doTrain
-    autoenc = trainAutoencoder(feaTrans, "hiddenSize",20,"L2WeightRegularization",0.0002,"SparsityProportion",0.2, ...
+    autoenc = trainAutoencoder(feaTrans, "hiddenSize",20,"L2WeightRegularization",0.0002,"SparsityProportion",0.15, ...
         "MaxEpochs", 1000,"ShowProgressWindow", false);
     save(fullfile("Data","autoenc.mat"), "autoenc")
 else
@@ -705,7 +725,7 @@ mseError = mse(feaTrans,feaReconstructed, "all")
 ```
 
 ```matlabTextOutput
-mseError = 0.0071
+mseError = 0.0042
 ```
 
 ```matlab
@@ -730,7 +750,7 @@ threshold = quantile(ETranspose,1-contaminationFraction)
 ```
 
 ```matlabTextOutput
-threshold = 0.5772
+threshold = 0.4365
 ```
 
 ```matlab
@@ -770,19 +790,20 @@ visualizeOutliersinPCA(S, outliersTT.FinalOutlier )
 
 ![figure_25.png](Seminar02_Outliers_media/figure_25.png)
 
-Visualize the final outliers in the important features identified by PCA.
+Visualize the final outliers in the important (or interested) features identified by PCA.
 
 ```matlab
 figure
 tiledlayout("flow")
-for k = 1: length(importantFeatures)
+interestedFeatures = [importantFeatures;"PT08.S5(O3)"];
+for k = 1: length(interestedFeatures)
     nexttile
-plot(outliersTT.Properties.RowTimes, outliersTT.(importantFeatures(k)), "Color",[0.5, 0.5, 0.5])
-hold on
-scatter(outliersTT.Properties.RowTimes(outliersTT.FinalOutlier),outliersTT{outliersTT.FinalOutlier,importantFeatures(k)},  "Marker","x")
-hold off
-legend(["Original data", "Outliers"], "Location","best")
-title(importantFeatures(k))
+    plot(outliersTT.Properties.RowTimes, outliersTT.(interestedFeatures(k)), "Color",[0.5, 0.5, 0.5])
+    hold on
+    scatter(outliersTT.Properties.RowTimes(outliersTT.FinalOutlier),outliersTT{outliersTT.FinalOutlier,interestedFeatures(k)},  "Marker","x")
+    hold off
+    legend(["Data", "Outliers"], "Location","best")
+    title(interestedFeatures(k))
 end
 ```
 
